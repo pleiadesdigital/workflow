@@ -20,8 +20,38 @@ function rowebdev_files() {
 }
 add_action('wp_enqueue_scripts', 'rowebdev_files');
 
+/* THEME FEATURES */
+function rowebdev_features () {
+  add_theme_support('title-tag');
+  add_theme_support('post-thumbnails');
+  // IMAGE SIZES
+  add_image_size('page-banner');
+  add_image_size('feat-image', 960, 600, array('center', 'top'));
+}
+add_action('after_setup_theme', 'rowebdev_features');
 
 
+/* CUSTOM POST TYPES */
 
+function rowebdev_cpts() {
+  /* EVENTS POST TYPE */
+  $labels = array(
+    'name'            => 'Events',
+    'add_new_item'    => 'Add New Event',
+    'edit_item'       => 'Edit Event',
+    'all_items'       => 'All Events',
+    'singular_name'   => 'Event'
+  );
+  $args = array(
+    'supports'        => array('title', 'editor', 'excerpt'),
+    'rewrite'         => array('slug' => 'events'),
+    'has_archive'     => true,
+    'public'          => true,
+    'labels'          => $labels,
+    'menu_icon'       => 'dashicons-calendar-alt'
+  );
+  register_post_type('event', $args);
+}
+add_action('init', 'rowebdev_cpts');
 
 
