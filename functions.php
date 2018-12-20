@@ -82,9 +82,10 @@ add_action('init', 'rowebdev_cpts');
 
 function rowebdev_adjust_queries($query) {
   $today = date('Ymd');
+  // Manipulating EVENTS
   if (!is_admin() && is_post_type_archive('event') && $query->is_main_query()) {
     $query->set('meta_key', 'event_date');
-    $query->set('order_by', 'meta_value_num');
+    $query->set('orderby', 'meta_value_num');
     $query->set('order', 'ASC');
     $query->set('meta_query', array(array(
       'key' => 'event_date',
@@ -93,6 +94,14 @@ function rowebdev_adjust_queries($query) {
       'type'      => 'numeric'
     )));
   }
+  // Manipulating PROGRAMS
+  if (!is_admin() && is_post_type_archive('program') && $query->is_main_query()) {
+    $query->set('orderby', 'title');
+    $query->set('order', 'ASC');
+    $query->set('posts_per_page', -1);
+  }
+
+
 }
 
 add_action('pre_get_posts', 'rowebdev_adjust_queries');
