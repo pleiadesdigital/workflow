@@ -32,8 +32,9 @@ add_action('after_setup_theme', 'rowebdev_features');
 
 
 /* CUSTOM POST TYPES */
-
 function rowebdev_cpts() {
+
+
   /* EVENTS POST TYPE */
   $labels = array(
     'name'            => 'Events',
@@ -51,7 +52,48 @@ function rowebdev_cpts() {
     'menu_icon'       => 'dashicons-calendar-alt'
   );
   register_post_type('event', $args);
+
+
+  /* PROGRAMS POST TYPE */
+  $labels = array(
+    'name'            => 'Programs',
+    'add_new_item'    => 'Add New Program',
+    'edit_item'       => 'Edit Program',
+    'all_items'       => 'All Programs',
+    'singular_name'   => 'Program'
+  );
+  $args = array(
+    'supports'        => array('title', 'editor'),
+    'rewrite'         => array('slug' => 'programs'),
+    'has_archive'     => true,
+    'public'          => true,
+    'labels'          => $labels,
+    'menu_icon'       => 'dashicons-awards'
+  );
+  register_post_type('program', $args);
+
+
+
 }
 add_action('init', 'rowebdev_cpts');
 
+
+/* CUSTOMIZING DEFAULT QUERY BEHAVIOR */
+
+function rowebdev_adjust_queries($query) {
+  $today = date('Ymd');
+  if (!is_admin() && is_post_type_archive('event') && $query->is_main_query()) {
+    $query->set('meta_key', 'event_date');
+    $query->set('order_by', 'meta_value_num');
+    $query->set('order', 'ASC');
+    $query->set('meta_query', array(array(
+      'key' => 'event_date',
+      'compare'   => '>=',
+      'value'     => $today,
+      'type'      => 'numeric'
+    )));
+  }
+}
+
+add_action('pre_get_posts', 'rowebdev_adjust_queries');
 
