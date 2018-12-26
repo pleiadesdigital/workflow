@@ -24,16 +24,14 @@ add_action('wp_enqueue_scripts', 'rowebdev_files');
 function rowebdev_features () {
   add_theme_support('title-tag');
   add_theme_support('post-thumbnails');
-  // IMAGE SIZES
-  add_image_size('page-banner');
-  add_image_size('feat-image', 960, 600, array('center', 'top'));
+  add_image_size('professorLandscape', 400, 260, true);
+  add_image_size('professorPortrait', 480, 650, true);
 }
 add_action('after_setup_theme', 'rowebdev_features');
 
 
 /* CUSTOM POST TYPES */
 function rowebdev_cpts() {
-
 
   /* EVENTS POST TYPE */
   $labels = array(
@@ -71,6 +69,23 @@ function rowebdev_cpts() {
     'menu_icon'       => 'dashicons-awards'
   );
   register_post_type('program', $args);
+
+  /* PROFESSOR POST TYPE */
+  $labels = array(
+    'name'            => 'Professor',
+    'add_new_item'    => 'Add New Professor',
+    'edit_item'       => 'Edit Professor',
+    'all_items'       => 'All Professors',
+    'singular_name'   => 'Professor'
+  );
+  $args = array(
+    'supports'        => array('title', 'editor', 'thumbnail'),
+    'has_archive'     => false,
+    'public'          => true,
+    'labels'          => $labels,
+    'menu_icon'       => 'dashicons-admin-users'
+  );
+  register_post_type('professor', $args);
 
 
 
