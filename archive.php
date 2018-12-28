@@ -1,17 +1,12 @@
 <?php get_header(); ?>
 <!-- PAGE BANNER -->
-<div class="page-banner">
-  <div class="page-banner__bg-image" style="background-image: url(<?php echo get_theme_file_uri('images/ocean.jpg'); ?>)"></div>
-
-  <div class="page-banner__content container container--narrow">
-    <h1 class="page-banner__title">
-      <?php the_archive_title(); ?>
-    </h1>
-    <div class="page-banner__intro">
-      <p>Keep up with our latest news.</p>
-    </div>
-  </div>
-</div>
+<?php
+  pageBanner(array(
+    'title'         => get_the_archive_title(),
+    'subtitle'      =>  get_the_archive_description(),
+    'photo'         => get_theme_file_uri('/images/cover.jpg')
+  ));
+?>
 
 
 <div class="container container--narrow page-section">
