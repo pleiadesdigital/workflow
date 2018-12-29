@@ -3,10 +3,6 @@
 /* THEME FILES */
 function rowebdev_files() {
 
-  /* SCRIPTS */
-  wp_enqueue_script('main-scripts', get_theme_file_uri('/js/scripts-bundled.js'), NULL, microtime(), true);
-
-
   /* GOOGLE FONTS */
   wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css?family=Rajdhani:400,500,600|Raleway:300,400,500');
 
@@ -15,6 +11,12 @@ function rowebdev_files() {
 
   /* MAIN STYLES */
   wp_enqueue_style( 'main-styles', get_stylesheet_uri(), NULL, microtime());
+
+ /* GOOGLE API SCRIPT */
+  wp_enqueue_script('googleMap', '//maps.googleapis.com/maps/api/js?key=AIzaSyBLKfRg72Dz_juZhVky8cAj_sggF-2Lb08', NULL, microtime(), true);
+
+  /* MAIN SCRIPTS */
+  wp_enqueue_script('main-scripts', get_theme_file_uri('/js/scripts-bundled.js'), NULL, microtime(), true);
 
 
 }
@@ -30,6 +32,33 @@ function rowebdev_features () {
 }
 add_action('after_setup_theme', 'rowebdev_features');
 
+/* PAGE BANNER FUNCTION */
+function pageBanner($args = NULL) {
+  if (!$args['title']) {
+    $args['title'] = get_the_title();
+  }
+  if (!$args['subtitle']) {
+    $args['subtitle'] = get_field('page_banner_subtitle');
+  }
+  if (!$args['photo']) {
+    if (get_field('page_banner_background_image')) {
+      $pageBannerImage = get_field('page_banner_background_image');
+      $args['photo'] = $pageBannerImage['sizes']['pageBanner'];
+    } else {
+      $args['photo'] = get_theme_file_uri('/images/ocean.jpg');
+    }
+  }
+?>
+  <div class="page-banner">
+    <div class="page-banner__bg-image" style="background-image: url(<?php echo $args['photo']; ?>)"></div>
+    <div class="page-banner__content container container--narrow">
+      <h1 class="page-banner__title"><?php echo $args['title']; ?></h1>
+      <div class="page-banner__intro">
+        <p><?php echo $args['subtitle']; ?></p>
+      </div>
+    </div>
+  </div>
+<?php }
 
 /* CUSTOM POST TYPES */
 function rowebdev_cpts() {
@@ -51,7 +80,6 @@ function rowebdev_cpts() {
     'menu_icon'       => 'dashicons-calendar-alt'
   );
   register_post_type('event', $args);
-
 
   /* PROGRAMS POST TYPE */
   $labels = array(
@@ -88,11 +116,27 @@ function rowebdev_cpts() {
   );
   register_post_type('professor', $args);
 
+  /* CAMPUS POST TYPE */
+  $labels = array(
+    'name'            => 'Campuses',
+    'add_new_item'    => 'Add New Campus',
+    'edit_item'       => 'Edit Campus',
+    'all_items'       => 'All Campuses',
+    'singular_name'   => 'Campus'
+  );
+  $args = array(
+    'supports'        => array('title', 'editor', 'excerpt'),
+    'rewrite'         => array('slug' => 'campuses'),
+    'has_archive'     => true,
+    'public'          => true,
+    'labels'          => $labels,
+    'menu_icon'       => 'dashicons-building'
+  );
+  register_post_type('campus', $args);
 
 
 }
 add_action('init', 'rowebdev_cpts');
-
 
 /* CUSTOMIZING DEFAULT QUERY BEHAVIOR */
 function rowebdev_adjust_queries($query) {
@@ -115,38 +159,21 @@ function rowebdev_adjust_queries($query) {
     $query->set('order', 'ASC');
     $query->set('posts_per_page', -1);
   }
-
+  // Manipulating CAMPUSES
+  if (!is_admin() && is_post_type_archive('campus') && $query->is_main_query()) {
+    $query->set('posts_per_page', -1);
+  }
 
 }
 add_action('pre_get_posts', 'rowebdev_adjust_queries');
 
-/* PAGE BANNER FUNCTION */
-function pageBanner($args = NULL) {
-  if (!$args['title']) {
-    $args['title'] = get_the_title();
-  }
-  if (!$args['subtitle']) {
-    $args['subtitle'] = get_field('page_banner_subtitle');
-  }
-  if (!$args['photo']) {
-    if (get_field('page_banner_background_image')) {
-      $pageBannerImage = get_field('page_banner_background_image');
-      $args['photo'] = $pageBannerImage['sizes']['pageBanner'];
-    } else {
-      $args['photo'] = get_theme_file_uri('/images/ocean.jpg');
-    }
-  }
-?>
-  <div class="page-banner">
-    <div class="page-banner__bg-image" style="background-image: url(<?php echo $args['photo']; ?>)"></div>
-    <div class="page-banner__content container container--narrow">
-      <h1 class="page-banner__title"><?php echo $args['title']; ?></h1>
-      <div class="page-banner__intro">
-        <p><?php echo $args['subtitle']; ?></p>
-      </div>
-    </div>
-  </div>
+/* GOOGLE APIS  */
 
-<?php }
+function rowebdevMapKey($api) {
+  $api['key'] = 'AIzaSyBLKfRg72Dz_juZhVky8cAj_sggF-2Lb08';
+  return $api;
+}
+add_filter('acf/fields/google_map/api', 'rowebdevMapKey');
+
 
 

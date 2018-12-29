@@ -90,9 +90,20 @@
 
 			<?php get_template_part('template-parts/content', 'event'); ?>
 
-			<?php endwhile; endif; ?>
+			<?php endwhile; endif; wp_reset_postdata(); ?>
 
-
+			<!-- RELATED CAMPUSES -->
+			<!-- no need to create a new custom query, the program's main query already has the data -->
+			<?php $relatedCampuses = get_field('related_campus'); ?>
+			<?php if ($relatedCampuses) : ?>
+				<hr class="section-break">
+				<h3 class="headline headline--medium"><?php the_title(); ?> is available at these campuses:</h3>
+				<ul class="link-list min-list">
+				<?php foreach ($relatedCampuses as $campus) : ?>
+					<li><a href="<?php echo get_the_permalink($campus); ?>"><?php echo get_the_title($campus); ?></a></li>
+				<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
 
 	</div>
 
