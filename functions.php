@@ -18,6 +18,11 @@ function rowebdev_files() {
   /* MAIN SCRIPTS */
   wp_enqueue_script('main-scripts', get_theme_file_uri('/js/scripts-bundled.js'), NULL, microtime(), true);
 
+  /* Allow Dynamic Flexible Communication between PHP and JavaScript */
+  wp_localize_script('main-scripts', 'jsData', array(
+    'root_url'      => get_site_url()
+  ));
+
 
 }
 add_action('wp_enqueue_scripts', 'rowebdev_files');
